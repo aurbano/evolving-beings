@@ -1,6 +1,10 @@
 # Evolving Beings
 
-## Conda environment
+## Running locally
+
+Just run the `run.py` file at the root. It should open up a window titled "Evolving beings" where the world should start animating.
+
+## Development
 
 ### Create environment
 

@@ -1,10 +1,13 @@
 import arcade
+from arcade.gui import UIManager
+from arcade.gui.widgets import UITextArea
 
 from src.world import World
 
-SCREEN_WIDTH = 500
+SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 500
 SCREEN_TITLE = "Evolving Beings"
+DEBUG_PADDING = 10
 
 
 class EvolvingBeings(arcade.Window):
@@ -12,11 +15,29 @@ class EvolvingBeings(arcade.Window):
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
 
         self.world = World(250, 250)
-        self.world.spawn(10)
+
+        self.manager = UIManager()
+        self.manager.enable()
+
+        self.debug_text = UITextArea(
+            x=DEBUG_PADDING,
+            y=-DEBUG_PADDING,
+            width=SCREEN_WIDTH - SCREEN_HEIGHT - DEBUG_PADDING,
+            height=SCREEN_HEIGHT - DEBUG_PADDING,
+            text='Testing this',
+            text_color=(255, 255, 255, 255),
+        )
+
+        self.manager.add(self.debug_text)
+
+        self.background_color = arcade.color.BLACK
+
+        # cell rendering
+        self.grid_sprite_list = arcade.SpriteList()
 
     def setup(self):
         """Sets up the world for the current simulation"""
-        pass
+        self.world.spawn(10)
 
     def on_key_press(self, key: int, modifiers: int):
         """Processes key presses
@@ -40,10 +61,13 @@ class EvolvingBeings(arcade.Window):
         Arguments:
             delta_time {float} -- How much time since the last call
         """
-        pass
+        self.debug_text.text = f'FPS: {int(1 / delta_time)}\n' \
+                               f'Beings alive: {self.world.beings()}\n' \
+
 
     def on_draw(self):
-        pass
+        self.clear()
+        self.manager.draw()
 
 
 if __name__ == "__main__":

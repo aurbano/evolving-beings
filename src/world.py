@@ -53,6 +53,14 @@ class World:
             being = Being()
             self.state[x, y].update('BEING', being)
 
+    def beings(self):
+        num = 0
+        for row in self.state:
+            for cell in row:
+                if cell.type is 'BEING' and cell.content.energy > 0:
+                    num += 1
+        return num
+
     def render(self):
         state = np.zeros((self.w, self.h))
         for i, row in enumerate(self.state):
