@@ -1,70 +1,65 @@
-import numpy as np
 import random
+import operator
 
 from src.being import Being
-from src.cell import Cell
 
 
 class World:
     def __init__(self, w=128, h=128):
         self.w = w
         self.h = h
-        self.state = np.empty((w, h), dtype=object)
-        for i in range(w):
-            for j in range(h):
-                self.state[i, j] = Cell(i, j)
+        self.alive = 0
+
+        self.locations = dict()
 
     def step(self):
-        state = np.copy(self.state)
+        self.alive = 0
+        new_locations = dict()
+        dead_sprites = []
+        for location, being in self.locations.items():
+            if not being.is_alive():
+                dead_sprites.append(being.sprite_index)
+                continue
 
-        for i, row in enumerate(self.state):
-            for j, cell in enumerate(row):
-                if cell.type != 'BEING':
+            self.alive += 1
+
+            being.step()
+            action = being.choose_action()
+
+            if action == 'STOP':
+                being.speed = 0
+
+            if action == 'MOVE':
+                being.speed = 1
+
+            if being.speed > 0:
+                new_location = (
+                    max(0, min(self.w, location[0] + being.direction[0])),
+                    max(0, min(self.h, location[1] + being.direction[1])),
+                )
+
+                if new_location not in self.locations and new_location not in new_locations:
+                    new_locations[new_location] = being
                     continue
 
-                cell.content.step()
-                action = cell.content.choose_action()
+            new_locations[location] = being
 
-                if action == 'MOVE':
-                    # lets see if the desired cell is empty
-                    direction = cell.content.direction
-                    next_loc = [
-                        max(0, min(self.w - 1, cell.x + direction[0])),
-                        max(0, min(self.h - 1, cell.y + direction[1]))
-                    ]
+        self.locations = new_locations
 
-                    if state[next_loc[0], next_loc[1]].type == 'NONE':
-                        # cell is empty, lets move!
-                        state[next_loc[0], next_loc[1]].update('BEING', cell.content)
-                        state[i, j].update('NONE')
+        return dead_sprites
 
-        self.state = state
+    def spawn(self, sprite_index):
+        x = random.randint(0, self.w - 1)
+        y = random.randint(0, self.h - 1)
+        location = (x, y)
 
-    def spawn(self, number):
-        for _ in range(number):
+        while location in self.locations:
             x = random.randint(0, self.w - 1)
             y = random.randint(0, self.h - 1)
+            location = (x, y)
 
-            while self.state[x, y].type != 'NONE':
-                x = random.randint(0, self.w - 1)
-                y = random.randint(0, self.h - 1)
-                # TODO: this could be infinite
+        self.alive += 1
+        being = Being(sprite_index)
+        self.locations[location] = being
 
-            being = Being()
-            self.state[x, y].update('BEING', being)
-
-    def beings(self):
-        num = 0
-        for row in self.state:
-            for cell in row:
-                if cell.type is 'BEING' and cell.content.energy > 0:
-                    num += 1
-        return num
-
-    def render(self):
-        state = np.zeros((self.w, self.h))
-        for i, row in enumerate(self.state):
-            for j, cell in enumerate(row):
-                state[i, j] = cell.color()
-
-        return state
+        return location, being
