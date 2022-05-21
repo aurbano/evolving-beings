@@ -1,5 +1,7 @@
 # Evolving Beings
 
+![Main UI](https://raw.githubusercontent.com/aurbano/evolving-beings/main/screenshots/main.png "Main UI of evolving beings")
+
 ## Running locally
 
 Just run the `run.py` file at the root. It should open up a window titled "Evolving beings" where the world should start animating.
