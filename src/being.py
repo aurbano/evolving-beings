@@ -6,8 +6,8 @@ import random
 ENERGY_LOSS_GENERAL = 0.001
 ENERGY_LOSS_ACTIONS = 0.005
 
-FOOD_TO_ENERGY = 0.1
-WATER_TO_ENERGY = 0.1
+FOOD_TO_ENERGY = 0.001
+WATER_TO_ENERGY = 0.001
 
 # Rotation vectors for movement
 theta = np.deg2rad(45)
@@ -23,18 +23,18 @@ class Being:
     """
     def __init__(self, sprite_index):
         # Subjective states (things the "brain" feels)
-        self.happiness = 1
-        self.hunger = 0
-        self.thirst = 0
+        self.happiness = 1.
+        self.hunger = 0.
+        self.thirst = 0.
 
         # Objective states (hidden from the "brain")
-        self.food = 1
-        self.water = 1
-        self.energy = 1
+        self.food = 1.
+        self.water = 1.
+        self.energy = 1.
 
-        self.angle = 0
+        self.angle = 0.
         self.direction = [1, 0]  # vector from (0,0) (the being) to the direction its facing
-        self.speed = 0
+        self.speed = 0.
         self.action_space = ['NOOP', 'TURN_LEFT', 'TURN_RIGHT', 'MOVE', 'STOP', 'EAT', 'DRINK']
 
         self.sprite_index = sprite_index
@@ -50,18 +50,19 @@ class Being:
         return action
 
     def step(self):
-        self.energy -= ENERGY_LOSS_GENERAL
+        self.energy = max(0, self.energy - ENERGY_LOSS_GENERAL)
 
-        if self.food > 0:
-            self.food -= FOOD_TO_ENERGY
-            self.energy += FOOD_TO_ENERGY
+        if self.energy < 1:
+            if self.food > 0:
+                self.food = max(0, self.food - FOOD_TO_ENERGY)
+                self.energy = min(1, self.energy + FOOD_TO_ENERGY)
 
-        if self.water > 0:
-            self.water -= WATER_TO_ENERGY
-            self.energy += WATER_TO_ENERGY
+            if self.water > 0:
+                self.water = max(0, self.water - WATER_TO_ENERGY)
+                self.energy = min(1, self.energy + WATER_TO_ENERGY)
 
         if self.speed > 0:
-            self.energy -= ENERGY_LOSS_ACTIONS
+            self.energy = max(0, self.energy - ENERGY_LOSS_ACTIONS)
 
     def is_alive(self):
         return self.energy > 0

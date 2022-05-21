@@ -111,7 +111,7 @@ class EvolvingBeings(arcade.Window):
 
         dead_sprites = self.world.step()
         for sprite_index in dead_sprites:
-            self.grid_sprite_list[sprite_index].visible = False
+            self.grid_sprite_list[sprite_index].color = arcade.color.BLACK
             self.available_sprites.append(sprite_index)
 
     def on_draw(self):
