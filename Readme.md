@@ -1,6 +1,6 @@
 # Evolving Beings
 
-![Main UI](https://raw.githubusercontent.com/aurbano/evolving-beings/main/screenshots/main.png "Main UI of evolving beings")
+![Main UI](screenshots/main.png?raw=true "Main UI of evolving beings")
 
 ## Running locally
 
