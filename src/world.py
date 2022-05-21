@@ -23,8 +23,7 @@ class World:
 
             self.alive += 1
 
-            being.step()
-            action = being.choose_action()
+            action = being.step(location, self.locations)
 
             if action == 'STOP':
                 being.speed = 0
