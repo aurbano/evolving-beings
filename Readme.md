@@ -1,55 +1,84 @@
 # Evolving Beings
 
-This project creates an environment similar to OpenAI's Gym to play around with simulated "beings" similar to tiny ants or something like that.
+A living being simulator exploring emergent behavior in 2D worlds.
 
-These beings experience hunger and thirst, and will die if they run out of energy (so they need to learn to move towards food and water and eat/drink)
+Beings have simple needs (food, water, energy) and basic perception (vision). The goal is to discover what minimal primitives can yield complex, interesting behavior—perhaps even communication and collaboration.
 
-They also have a basic vision system, and eventually will be able to change part of their color as a potential form of communication.
+![Main UI](screenshots/main.png?raw=true "Evolving Beings Simulation")
 
-------
+## Quick Start
 
-The main objective of this is to explore intelligent emergent behavior - perhaps given enough time they will learn to communicate and collaborate towards a common goal.
+```bash
+# Create virtual environment
+python -m venv .venv
+source .venv/bin/activate  # On Windows: .venv\Scripts\activate
 
-Eventually every parameter in their brains will be "evolvable", allowing certain beings to experience less hunger/thirst for instance, changing their vision capabilities...
+# Install dependencies
+pip install -e .
 
-### Current UI
+# Run the simulation
+python run.py
+```
 
-![Main UI](screenshots/main.png?raw=true "Main UI of evolving beings")
+## Features
+
+- **Living Beings**: Entities with energy, hunger, thirst, and vision
+- **Resource System**: Food and water spawn in the world, beings must find and consume them
+- **Simple AI**: Rule-based survival behavior (seek food when hungry, water when thirsty)
+- **Efficient Simulation**: Spatial hash grid for O(1) neighbor lookups
+- **Clean Architecture**: Simulation and rendering are fully separated
+
+## Architecture
+
+The codebase separates simulation logic from rendering:
+
+```
+src/evolving_beings/
+├── simulation/          # Pure logic, no rendering
+│   ├── being.py         # Being entity
+│   ├── resource.py      # Food/water
+│   ├── spatial.py       # Spatial hash grid
+│   └── world.py         # World manager
+└── renderer/            # Visualization
+    ├── colors.py        # Color schemes
+    └── pygame_renderer.py
+```
+
+This enables headless training runs and easy renderer swapping.
+
+## Controls
+
+- **ESC**: Quit simulation
+
+## Configuration
+
+Edit `src/evolving_beings/config.py` to adjust:
+- World size and initial population
+- Resource spawn rates
+- Being energy dynamics, vision parameters
+- Renderer settings (FPS, entity sizes)
 
 ## Roadmap
 
-- [x] Implement UI rendering engine as a Python executable.
-- [x] Implement training engine as a notebook.
-- [x] Create world manager and "beings", with needs, an action space, and a lifecycle.
-- [ ] Setup different training systems (genetic algorithm, reinforced learning, or a combination of both)
-- [ ] Enable saving and restoring "being brains"
-- [ ] Add mechanism for the beings to select themselves who to mate with
-- [ ] Add food & water to the world, and a customisable algorithm to determine how it spawns
-- [ ] Allow beings to attack each other
-- [ ] Allow beings to eat each other? Perhaps only if the other one is not alive?
-- [ ] Optimise world code to maximise FPS when running in UI mode
-
-## Running locally
-
-Just run the `run.py` file at the root. It should open up a window titled "Evolving beings" where the world should start animating.
+See [IDEAS.md](IDEAS.md) for planned future enhancements including:
+- Genetic algorithm for evolving being parameters
+- Neural network brains with reinforcement learning
+- Being communication and social dynamics
+- Save/load and reproducible simulations
 
 ## Development
 
-### Create environment
-
 ```bash
-conda env create -f environment.yml
+# Install with dev dependencies
+pip install -e ".[dev]"
+
+# Run linter
+ruff check src/
+
+# Install notebook dependencies
+pip install -e ".[notebook]"
 ```
 
-### Update environment after pulling new changes
+## Documentation
 
-```bash
-conda env update --file environment.yml  --prune
-```
-
-### Update env file after dependencies:
-
-```bash
-conda env export > environment.yml
-```
-
+See [CLAUDE.md](CLAUDE.md) for detailed architecture documentation and extension guides.
